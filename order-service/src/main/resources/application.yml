@@ -1,2 +1,12 @@
 server:
   port: 3000
+
+spring:
+
+  data:
+    mongodb:
+      database: admin
+      uri: ${MONGO_DB_URL:mongodb://admin:123456@localhost:27017}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
