@@ -10,3 +10,16 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
+    topic:
+      teste: teste
+    consumer:
+#      grupo de consumidores [kafka divide os grupo, em mesmo topico]
+      group-id: order-group
+#      ordem que é processada os eventos [latest - processa apos o ultimo evento]
+      auto-offset-reset: latest
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: OFF
