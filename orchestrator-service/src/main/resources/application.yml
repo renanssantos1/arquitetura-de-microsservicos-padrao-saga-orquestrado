@@ -9,3 +9,9 @@ spring:
     consumer:
       group-id: orchestrator-group
       auto-offset-reset: latest
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: OFF
