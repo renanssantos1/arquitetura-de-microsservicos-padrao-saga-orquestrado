@@ -116,25 +116,25 @@ services:
     environment:
       - KAFKA_BROKER=kafka:29092
     ports:
-      - 3000:3000
+      - 8080:8080
 
   product-validation-service:
     build: './product-validation-service'
     container_name: product-validation-service
     depends_on:
-      - kafka
       - product-db
+      - kafka
     networks:
       - orchestrator-saga
     environment:
       - KAFKA_BROKER=kafka:29092
       - DB_HOST=product-db
-      - DB_NAME=product-db
       - DB_PORT=5432
+      - DB_NAME=product-db
       - DB_USER=postgres
       - DB_PASSWORD=postgres
     ports:
-      - 8090:8090
+      - "8090:8090"
 
   payment-service:
     build: './payment-service'
