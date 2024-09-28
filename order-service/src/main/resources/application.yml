@@ -11,7 +11,7 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
     topic:
-      start-page: start-page
+      start-saga: start-saga
       notify-ending: notify-ending
     consumer:
       group-id: order-group
