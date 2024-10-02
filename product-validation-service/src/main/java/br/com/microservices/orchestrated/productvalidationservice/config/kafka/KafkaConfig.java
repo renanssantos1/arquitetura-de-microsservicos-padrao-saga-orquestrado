@@ -1,4 +1,4 @@
-package br.com.microservices.orchestrated.productvalidationservice.config.exception.kafka;
+package br.com.microservices.orchestrated.productvalidationservice.config.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
