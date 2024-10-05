@@ -77,26 +77,25 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory);
     }
 
-    private NewTopic buildTopic(String name){
+    private NewTopic buildTopic(String name) {
         return TopicBuilder
                 .name(name)
-                .replicas(PARTITION_COUNT)
-                .partitions(REPLICA_COUNT)
+                .partitions(PARTITION_COUNT)
+                .replicas(REPLICA_COUNT)
                 .build();
     }
 
     @Bean
-    public NewTopic orchestratorTopic(){
+    public NewTopic orchestratorTopic() {
         return buildTopic(orchestratorTopic);
     }
-
     @Bean
-    public NewTopic productValidationSuccessTopic(){
+    public NewTopic productValidationSuccessTopic() {
         return buildTopic(productValidationSuccessTopic);
     }
 
     @Bean
-    public NewTopic productValidationFailTopic(){
+    public NewTopic productValidationFailTopic() {
         return buildTopic(productValidationFailTopic);
     }
 
