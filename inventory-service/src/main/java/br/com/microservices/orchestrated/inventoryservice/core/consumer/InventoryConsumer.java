@@ -26,7 +26,7 @@ public class InventoryConsumer {
 
     @KafkaListener(
             groupId = "${spring.kafka.consumer.group-id}",
-            topics = "${spring.kafka.topic.inventory-fail"
+            topics = "${spring.kafka.topic.inventory-fail}"
     )
     public void consumeFailEvent(String payload){
         log.info("Receiving rollback event {} from inventory topic", payload);

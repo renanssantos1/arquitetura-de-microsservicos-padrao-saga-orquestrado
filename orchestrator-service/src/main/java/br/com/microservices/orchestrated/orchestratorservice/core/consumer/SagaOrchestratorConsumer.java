@@ -26,7 +26,7 @@ public class SagaOrchestratorConsumer {
 
     @KafkaListener(
             groupId = "${spring.kafka.consumer.group-id}",
-            topics = "${spring.kafka.topic.orchestrator"
+            topics = "${spring.kafka.topic.orchestrator}"
     )
     public void consumeOrchestratorEvent(String payload){
         log.info("Receiving event {} from orchestrator topic", payload);
@@ -37,7 +37,7 @@ public class SagaOrchestratorConsumer {
 
     @KafkaListener(
             groupId = "${spring.kafka.consumer.group-id}",
-            topics = "${spring.kafka.topic.finish-success"
+            topics = "${spring.kafka.topic.finish-success}"
     )
     public void consumeFinishSuccessEvent(String payload){
         log.info("Receiving event {} from finish-success topic", payload);
@@ -48,7 +48,7 @@ public class SagaOrchestratorConsumer {
 
     @KafkaListener(
             groupId = "${spring.kafka.consumer.group-id}",
-            topics = "${spring.kafka.topic.finish-fail"
+            topics = "${spring.kafka.topic.finish-fail}"
     )
     public void consumeFinishFailEvent(String payload){
         log.info("Receiving event {} from finish-fail topic", payload);

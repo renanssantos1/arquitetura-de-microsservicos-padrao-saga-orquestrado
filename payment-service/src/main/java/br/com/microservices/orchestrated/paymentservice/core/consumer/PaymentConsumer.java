@@ -26,7 +26,7 @@ public class PaymentConsumer {
 
     @KafkaListener(
             groupId = "${spring.kafka.consumer.group-id}",
-            topics = "${spring.kafka.topic.payment-fail"
+            topics = "${spring.kafka.topic.payment-fail}"
     )
     public void consumeFailEvent(String payload){
         log.info("Receiving rollback event {} from payment topic", payload);
