@@ -1,4 +1,4 @@
-package br.com.microservices.orchestrated.paymentservice.kafka;
+package br.com.microservices.orchestrated.paymentservice.config.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
