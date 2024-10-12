@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import static br.com.microservices.orchestrated.productvalidationservice.core.enums.ESagaStatus.ROLLBACK_PENDING;
 import static br.com.microservices.orchestrated.productvalidationservice.core.enums.ESagaStatus.SUCCESS;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -46,21 +47,18 @@ public class ProductValidationService {
         kafkaProducer.sendEvent(jsonUtil.toJson(event));
     }
 
-    private void handleFailCurrentNotExecuted(Event event, String message) {
-    }
-
     private void handleSuccess(Event event) {
         event.setStatus(SUCCESS);
         event.setSource(CURRENT_SOURCE);
-        addHistory(event);
+        addHistory(event, "Products are validated successfully");
     }
 
-    private void addHistory(Event event) {
+    private void addHistory(Event event, String message) {
         History history = History
                 .builder()
                 .source(event.getSource())
                 .status(event.getStatus())
-                .message("Products are validated successfully")
+                .message(message)
                 .createdAt(LocalDateTime.now())
                 .build();
         event.addToHistory(history);
@@ -110,5 +108,11 @@ public class ProductValidationService {
         if (!productRepository.existsByCode(code)) {
             throw new ValidationException("Product does not exists in database!");
         }
+    }
+
+    private void handleFailCurrentNotExecuted(Event event, String message) {
+        event.setStatus(ROLLBACK_PENDING);
+        event.setSource(CURRENT_SOURCE);
+        addHistory(event, "Fail to validate products".concat(message));
     }
 }
