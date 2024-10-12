@@ -2,6 +2,9 @@ package br.com.microservices.orchestrated.productvalidationservice.core.service;
 
 import br.com.microservices.orchestrated.productvalidationservice.config.exception.ValidationException;
 import br.com.microservices.orchestrated.productvalidationservice.core.dto.Event;
+import br.com.microservices.orchestrated.productvalidationservice.core.dto.History;
+import br.com.microservices.orchestrated.productvalidationservice.core.dto.OrderProducts;
+import br.com.microservices.orchestrated.productvalidationservice.core.model.Validation;
 import br.com.microservices.orchestrated.productvalidationservice.core.producer.KafkaProducer;
 import br.com.microservices.orchestrated.productvalidationservice.core.repository.ProductRepository;
 import br.com.microservices.orchestrated.productvalidationservice.core.repository.ValidationRepository;
@@ -11,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
+import static br.com.microservices.orchestrated.productvalidationservice.core.enums.ESagaStatus.SUCCESS;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -31,7 +37,7 @@ public class ProductValidationService {
     public void validateExistingProducts(Event event) {
         try {
             checkCurrentValidationEvent(event);
-            createValidation(event);
+            createValidation(event, true);
             handleSuccess(event);
         } catch (Exception exception) {
             log.error("Error trying to validate products:", exception);
@@ -45,12 +51,33 @@ public class ProductValidationService {
     }
 
     private void handleSuccess(Event event) {
+        event.setStatus(SUCCESS);
+        event.setSource(CURRENT_SOURCE);
+        String message = "";
+        addHistory(event, message);
     }
 
-    private void createValidation(Event event) {
+    private void addHistory(Event event, String message) {
+        History history = History
+                .builder()
+                .source(event.getSource())
+                .status(event.getStatus())
+                .message(message)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
-    private void validateProductsInformed(Event event){
+    private void createValidation(Event event, boolean success) {
+        var validation = Validation
+                .builder()
+                .orderId(event.getPayload().getId())
+                .transactionId(event.getTransactionId())
+                .success(success)
+                .build();
+        validationRepository.save(validation);
+    }
+
+    private void validateProductsInformed(Event event) {
         if (isEmpty(event.getPayload()) || isEmpty(event.getPayload().getProducts())) {
             throw new ValidationException("Product list is empty!");
         }
@@ -62,8 +89,27 @@ public class ProductValidationService {
 
     private void checkCurrentValidationEvent(Event event) {
         validateProductsInformed(event);
+        if (validationRepository.existsAllByOrderIdAndTransactionId(
+                event.getOrderId(), event.getTransactionId()
+        )) {
+            throw new ValidationException("There's another transactionId for this validation.");
+        }
 
+        event.getPayload().getProducts().forEach(product -> {
+            validateProductInformed(product);
+            validateExistingProduct(product.getProduct().getCode());
+        });
     }
 
+    private void validateProductInformed(OrderProducts orderProducts) {
+        if (isEmpty(orderProducts.getProduct()) || isEmpty(orderProducts.getProduct().getCode())) {
+            throw new ValidationException("Product must be informed!");
+        }
+    }
 
+    private void validateExistingProduct(String code) {
+        if (!productRepository.existsByCode(code)) {
+            throw new ValidationException("Product does not exists in database!");
+        }
+    }
 }
