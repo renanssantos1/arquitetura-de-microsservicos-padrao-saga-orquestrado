@@ -11,7 +11,6 @@ import br.com.microservices.orchestrated.productvalidationservice.core.repositor
 import br.com.microservices.orchestrated.productvalidationservice.core.utls.JsonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -53,18 +52,18 @@ public class ProductValidationService {
     private void handleSuccess(Event event) {
         event.setStatus(SUCCESS);
         event.setSource(CURRENT_SOURCE);
-        String message = "";
-        addHistory(event, message);
+        addHistory(event);
     }
 
-    private void addHistory(Event event, String message) {
+    private void addHistory(Event event) {
         History history = History
                 .builder()
                 .source(event.getSource())
                 .status(event.getStatus())
-                .message(message)
+                .message("Products are validated successfully")
                 .createdAt(LocalDateTime.now())
                 .build();
+        event.addToHistory(history);
     }
 
     private void createValidation(Event event, boolean success) {
